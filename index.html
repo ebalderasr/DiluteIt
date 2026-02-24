@@ -2,311 +2,1289 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
   <title>DiluteIt | Host Cell</title>
 
+  <!-- PWA / Mobile -->
   <meta name="theme-color" content="#0a0a0a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="DiluteIt" />
 
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+
   <style>
+    /* =========================
+       DESIGN TOKENS (DiluteIt)
+       MolarPrep/CellSplit-like structure
+       ========================= */
     :root {
       --bg-main: #0a0a0a;
-      --bg-card: #171717;
+      --bg-card: #151515;
       --bg-input: #1f1f1f;
-      --accent: #ff9800; /* Safety Orange */
-      --accent-glow: rgba(255, 152, 0, 0.15);
-      --text-pri: #eef3e6;
-      --text-sec: #a7b394;
-      --border-color: #333;
+      --bg-soft: #111111;
+
+      --accent: #ff9800;
+      --accent-strong: #ff9800;
+      --accent-glow: rgba(255, 152, 0, 0.16);
+
+      --text-pri: #f1f1f1;
+      --text-sec: #b8b8b8;
+      --text-dim: #8f8f8f;
+
+      --border-color: #323232;
+      --border-soft: rgba(255, 152, 0, 0.08);
+
       --danger: #ef5350;
+      --danger-glow: rgba(239, 83, 80, 0.18);
+
+      --ok: #66bb6a;
+      --ok-glow: rgba(102, 187, 106, 0.18);
+
       --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.25);
+
+      --maxw: 980px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-main);
+      font-family: "Courier New", Courier, monospace;
       color: var(--text-pri);
-      margin: 0;
-      padding: 20px;
-      line-height: 1.5;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255, 152, 0, 0.04), transparent 40%),
+        radial-gradient(circle at 90% 20%, rgba(255, 152, 0, 0.03), transparent 35%),
+        linear-gradient(180deg, #090909 0%, #0b0b0b 100%);
+      line-height: 1.4;
+      padding: 18px;
     }
 
-    .mono { font-family: "Courier New", Courier, monospace; }
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+    }
 
-    .container { max-width: 800px; margin: 0 auto; }
+    .u {
+      font-family: Arial, sans-serif;
+      text-transform: none !important;
+    }
 
-    /* Header */
-    header {
+    /* =========================
+       HEADER
+       ========================= */
+    .header-container {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin: 0 auto 20px auto;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .brand {
+      display: flex;
       align-items: center;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 15px;
-      margin-bottom: 30px;
+      gap: 14px;
+      min-width: 0;
     }
 
-    .brand h1 { margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
-    .brand p { margin: 0; font-size: 0.8rem; color: var(--text-sec); text-transform: uppercase; }
-
-    .lang-switch button {
-      background: none; border: none; color: var(--text-sec); 
-      font-weight: bold; cursor: pointer; padding: 5px;
-    }
-    .lang-switch button.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-
-    /* Cards */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 20px;
+    .brand-logo {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 152, 0, 0.22);
+      box-shadow: 0 0 18px rgba(255, 152, 0, 0.14);
+      background: rgba(255, 255, 255, 0.01);
+      flex-shrink: 0;
     }
 
-    .input-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+    .header-title {
+      margin: 0;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-size: 1.8rem;
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 10px rgba(255, 152, 0, 0.06);
     }
 
-    .field-group {
+    .header-subtitle {
+      margin-top: 4px;
+      color: var(--text-sec);
+      font-size: 0.78rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .controls {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      align-items: flex-end;
+      flex-shrink: 0;
     }
 
-    label { font-size: 0.75rem; color: var(--text-sec); text-transform: uppercase; font-weight: bold; }
-    
-    .input-row { display: flex; gap: 5px; }
+    .lang-switch {
+      font-weight: bold;
+      color: var(--text-sec);
+      user-select: none;
+      white-space: nowrap;
+    }
 
-    input, select {
+    .lang-switch button {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      padding: 0;
+      text-transform: uppercase;
+    }
+
+    .lang-switch button.active {
+      color: var(--accent);
+      text-shadow: 0 0 8px rgba(255, 152, 0, 0.25);
+    }
+
+    .btn-clear,
+    .btn-docs {
+      font-family: inherit;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: 0.2s ease;
+      font-size: 0.8rem;
+      padding: 8px 12px;
+    }
+
+    .btn-docs {
+      background: var(--bg-input);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      text-decoration: none;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    .btn-docs:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .btn-clear {
+      background: transparent;
+      color: var(--text-sec);
+      border: 1px solid var(--text-sec);
+    }
+
+    .btn-clear:hover {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px var(--danger-glow);
+    }
+
+    #install-btn {
+      border-color: var(--accent);
+      color: var(--accent);
+      animation: pulse-orange 2s infinite;
+    }
+
+    #install-btn[hidden] {
+      display: none !important;
+    }
+
+    @keyframes pulse-orange {
+      0%   { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.35); }
+      70%  { box-shadow: 0 0 0 8px rgba(255, 152, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+    }
+
+    /* =========================
+       MAIN CARD
+       ========================= */
+    .card {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0)),
+        var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: inset 0 0 0 1px rgba(255, 152, 0, 0.015);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card.is-invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px var(--danger-glow);
+    }
+
+    .card-title {
+      margin: 0 0 8px 0;
+      color: var(--text-pri);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-hint {
+      color: var(--text-dim);
+      font-size: 0.74rem;
+      margin: 0 0 14px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .target-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       background: var(--bg-input);
       border: 1px solid var(--border-color);
-      color: var(--text-pri);
-      padding: 12px;
-      border-radius: 6px;
-      outline: none;
-    }
-
-    input:focus { border-color: var(--accent); }
-    input.target-field { border: 2px solid var(--accent); background: var(--accent-glow); }
-
-    /* Control Selector */
-    .target-selector {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-      background: var(--bg-input);
-      padding: 10px;
       border-radius: var(--radius);
+      padding: 8px;
+      margin-bottom: 18px;
     }
 
     .target-option {
       cursor: pointer;
-      font-size: 0.8rem;
-      padding: 8px 12px;
-      border-radius: 4px;
+      font-size: 0.9rem;
+      padding: 10px 8px;
+      border-radius: 8px;
       color: var(--text-sec);
+      text-align: center;
+      border: 1px solid transparent;
+      transition: 0.15s ease;
+      user-select: none;
+    }
+
+    .target-option:hover {
+      border-color: rgba(255, 152, 0, 0.22);
+      color: var(--text-pri);
     }
 
     .target-option.active {
       background: var(--accent);
       color: #000;
       font-weight: bold;
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    .btn-calc {
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 0.76rem;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+    }
+
+    .label-target {
+      color: var(--accent);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+    }
+
+    input,
+    select {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-pri);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      outline: none;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input::placeholder {
+      color: #8c8c8c;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    select {
+      min-width: 86px;
+    }
+
+    input.target-field {
+      border: 2px solid var(--accent);
+      background: rgba(255, 152, 0, 0.07);
+      box-shadow: inset 0 0 0 1px rgba(255, 152, 0, 0.08);
+    }
+
+    .field-note {
+      color: var(--text-dim);
+      font-size: 0.68rem;
+      margin-top: -2px;
+      min-height: 1em;
+    }
+
+    .btn-action {
       width: 100%;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 15px;
+      margin-top: 6px;
+      padding: 14px;
+      background: var(--bg-input);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
       font-weight: bold;
       text-transform: uppercase;
-      border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
+      transition: 0.2s ease;
+      letter-spacing: 0.03em;
     }
 
-    /* Footer */
-    footer {
-      margin-top: 40px;
+    .btn-action:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* =========================
+       RESULT BOX
+       ========================= */
+    .results-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px dashed var(--accent);
+      background: var(--accent-glow);
+      display: none;
+    }
+
+    .results-box.is-visible { display: block; }
+
+    .results-box.is-error {
+      border-color: var(--danger);
+      background: var(--danger-glow);
+    }
+
+    .res-label {
+      font-size: 0.76rem;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .res-value {
+      font-size: 1.45rem;
+      font-weight: bold;
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(255, 152, 0, 0.10);
+      word-break: break-word;
+    }
+
+    .results-box.is-error .res-value {
+      color: #ff8a80;
+      text-shadow: none;
+    }
+
+    .res-meta {
+      margin-top: 8px;
+      color: var(--text-sec);
       font-size: 0.8rem;
-      border-top: 1px solid var(--border-color);
-      padding-top: 20px;
+    }
+
+    .res-meta strong {
+      color: var(--text-pri);
+    }
+
+    .status-line {
+      margin-top: 10px;
+      font-size: 0.78rem;
       color: var(--text-sec);
     }
 
-    @media (max-width: 600px) {
-      .input-grid { grid-template-columns: 1fr; }
+    /* =========================
+       FOUNDATION / FOOTER
+       ========================= */
+    .info-grid {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .info-title {
+      margin: 0 0 8px 0;
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .info-text {
+      color: var(--text-sec);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .eq-block {
+      margin: 8px 0 10px 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 152, 0, 0.18);
+      background: rgba(255, 152, 0, 0.05);
+      color: var(--text-pri);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .info-list {
+      margin: 8px 0 0 0;
+      padding-left: 18px;
+      color: var(--text-sec);
+      font-size: 0.8rem;
+    }
+
+    .info-list li { margin-bottom: 6px; }
+
+    .footer-author {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-sec);
+      font-size: 0.82rem;
+    }
+
+    .footer-author strong {
+      color: var(--text-pri);
+    }
+
+    /* =========================
+       MOBILE
+       ========================= */
+    @media (max-width: 768px) {
+      body { padding: 14px; }
+
+      .header-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .controls { align-items: flex-start; }
+
+      .brand-logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      .header-title { font-size: 1.5rem; }
+
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .target-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      select {
+        min-width: 74px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
+    <!-- Header -->
+    <header class="header-container">
       <div class="brand">
-        <h1 class="mono">DiluteIt</h1>
-        <p data-i18n="subtitle">Host Cell Lab Tools</p>
+        <img src="./icon-192.png" alt="DiluteIt logo" class="brand-logo" />
+        <div>
+          <h1 class="header-title">DiluteIt</h1>
+          <div class="header-subtitle" data-i18n="subtitle">Host Cell Lab Tools</div>
+        </div>
       </div>
-      <div class="lang-switch">
-        <button id="btn-es" class="active">ES</button> | <button id="btn-en">EN</button>
+
+      <div class="controls">
+        <div class="lang-switch" aria-label="Language selector">
+          <button id="btn-es" class="active" type="button">ES</button>
+          <span aria-hidden="true"> | </span>
+          <button id="btn-en" type="button">EN</button>
+        </div>
+
+        <a
+          href="https://github.com/ebalderasr/DiluteIt"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-docs"
+          id="btn-docs"
+          data-i18n="btnDocs"
+        >
+          [ Documentación / Repo ]
+        </a>
+
+        <button class="btn-clear" id="btn-clear" type="button" data-i18n="btnClear">
+          [ Limpiar todo ]
+        </button>
+
+        <button class="btn-clear" id="install-btn" type="button" hidden data-i18n="btnInstall">
+          [ Instalar App ]
+        </button>
       </div>
     </header>
 
-    <div class="card">
-      <p style="font-size: 0.7rem; color: var(--text-sec); text-transform: uppercase; margin-bottom: 15px;" data-i18n="instruction">
-        Selecciona la variable a calcular:
-      </p>
-      
-      <div class="target-selector">
-        <div class="target-option active" data-var="v1">V1</div>
-        <div class="target-option" data-var="c1">C1</div>
-        <div class="target-option" data-var="c2">C2</div>
-        <div class="target-option" data-var="v2">V2</div>
+    <!-- Main Solver -->
+    <main class="card" id="solver-card">
+      <h2 class="card-title" data-i18n="solverTitle">01. Solver universal de dilución</h2>
+      <div class="card-hint" data-i18n="solverHint">
+        Selecciona la incógnita y resuelve con C1V1 = C2V2
+      </div>
+
+      <div class="field-group">
+        <label data-i18n="instruction">Selecciona la variable a calcular</label>
+        <div class="target-selector" id="target-selector" role="tablist" aria-label="Variable objetivo">
+          <div class="target-option active" data-var="v1" role="tab" aria-selected="true">V1</div>
+          <div class="target-option" data-var="c1" role="tab" aria-selected="false">C1</div>
+          <div class="target-option" data-var="c2" role="tab" aria-selected="false">C2</div>
+          <div class="target-option" data-var="v2" role="tab" aria-selected="false">V2</div>
+        </div>
       </div>
 
       <div class="input-grid">
+        <!-- C1 -->
         <div class="field-group">
-          <label data-i18n="lblC1">C1 (Stock)</label>
+          <label for="val-c1" id="lbl-c1" data-i18n="lblC1">C1 (Stock)</label>
           <div class="input-row">
-            <input type="number" id="val-c1" class="mono" placeholder="0.0">
-            <select id="unit-c1">
-              <option value="1">M</option>
-              <option value="0.001">mM</option>
-              <option value="0.000001">μM</option>
-              <option value="1">mg/mL</option>
-              <option value="1">%</option>
+            <input type="number" id="val-c1" class="mono" placeholder="0.0" step="any" />
+            <select id="unit-c1" aria-label="Unidad C1">
+              <option value="molar:1">M</option>
+              <option value="molar:0.001">mM</option>
+              <option value="molar:0.000001">μM</option>
+              <option value="massvol:1">mg/mL</option>
+              <option value="percent:1">%</option>
             </select>
+          </div>
+          <div class="field-note" data-i18n="noteC">
+            C1 y C2 deben estar en bases compatibles (molar con molar, % con %, etc.)
           </div>
         </div>
 
+        <!-- V1 -->
         <div class="field-group">
-          <label data-i18n="lblV1">V1 (Inóculo/Alícuota)</label>
+          <label for="val-v1" id="lbl-v1" data-i18n="lblV1">V1 (Inóculo / Alícuota)</label>
           <div class="input-row">
-            <input type="number" id="val-v1" class="mono target-field" placeholder="Target">
-            <select id="unit-v1">
+            <input type="number" id="val-v1" class="mono target-field" placeholder="RESULTADO" step="any" />
+            <select id="unit-v1" aria-label="Unidad V1">
               <option value="1">L</option>
               <option value="0.001" selected>mL</option>
               <option value="0.000001">μL</option>
             </select>
           </div>
-        </div>
-
-        <div class="field-group">
-          <label data-i18n="lblC2">C2 (Final)</label>
-          <div class="input-row">
-            <input type="number" id="val-c2" class="mono" placeholder="0.0">
-            <select id="unit-c2">
-              <option value="1">M</option>
-              <option value="0.001" selected>mM</option>
-              <option value="0.000001">μM</option>
-              <option value="1">mg/mL</option>
-              <option value="1">%</option>
-            </select>
+          <div class="field-note" data-i18n="noteV">
+            V1 y V2 se convierten internamente a litros
           </div>
         </div>
 
+        <!-- C2 -->
         <div class="field-group">
-          <label data-i18n="lblV2">V2 (Vol. Final)</label>
+          <label for="val-c2" id="lbl-c2" data-i18n="lblC2">C2 (Final)</label>
           <div class="input-row">
-            <input type="number" id="val-v2" class="mono" placeholder="0.0">
-            <select id="unit-v2">
+            <input type="number" id="val-c2" class="mono" placeholder="0.0" step="any" />
+            <select id="unit-c2" aria-label="Unidad C2">
+              <option value="molar:1">M</option>
+              <option value="molar:0.001" selected>mM</option>
+              <option value="molar:0.000001">μM</option>
+              <option value="massvol:1">mg/mL</option>
+              <option value="percent:1">%</option>
+            </select>
+          </div>
+          <div class="field-note" data-i18n="noteC2">
+            La ecuación conserva cantidad de soluto, no convierte química entre bases distintas
+          </div>
+        </div>
+
+        <!-- V2 -->
+        <div class="field-group">
+          <label for="val-v2" id="lbl-v2" data-i18n="lblV2">V2 (Volumen final)</label>
+          <div class="input-row">
+            <input type="number" id="val-v2" class="mono" placeholder="0.0" step="any" />
+            <select id="unit-v2" aria-label="Unidad V2">
               <option value="1">L</option>
               <option value="0.001" selected>mL</option>
               <option value="0.000001">μL</option>
             </select>
           </div>
+          <div class="field-note"></div>
         </div>
       </div>
 
-      <button class="btn-calc" id="btn-calculate" data-i18n="btnCalc">Resolver Incógnita</button>
-    </div>
+      <button class="btn-action" id="btn-calculate" type="button" data-i18n="btnCalc">
+        Resolver incógnita
+      </button>
 
-    <footer>
-      <p><strong data-i18n="author">Autor: Emiliano Balderas</strong> | IBt-UNAM</p>
-      <p class="mono" style="font-size: 0.7rem;">C1V1 = C2V2</p>
+      <div id="result-box" class="results-box" aria-live="polite">
+        <div class="res-label" id="result-label" data-i18n="resultLabelDefault">Resultado</div>
+        <div class="res-value" id="result-value">---</div>
+        <div class="res-meta" id="result-meta"></div>
+        <div class="status-line" id="status-line"></div>
+      </div>
+    </main>
+
+    <!-- Foundation / Notes -->
+    <section class="info-grid" aria-label="Fundamento y notas">
+      <article class="info-card">
+        <h3 class="info-title" data-i18n="foundationTitle">Fundamento de la técnica</h3>
+        <div class="info-text" data-i18n="foundationText1">
+          DiluteIt aplica la ecuación de dilución basada en conservación de la cantidad de soluto entre una solución stock y una solución final.
+        </div>
+
+        <div class="eq-block">
+          C1V1 = C2V2
+        </div>
+
+        <div class="info-text" data-i18n="foundationText2">
+          La app permite resolver cualquiera de las cuatro variables (C1, V1, C2 o V2), siempre que ingreses tres valores válidos y unidades compatibles.
+        </div>
+
+        <ul class="info-list">
+          <li data-i18n="foundationDefC1"><strong>C1</strong>: concentración de la solución stock</li>
+          <li data-i18n="foundationDefV1"><strong>V1</strong>: volumen de stock (alícuota/inóculo)</li>
+          <li data-i18n="foundationDefC2"><strong>C2</strong>: concentración objetivo final</li>
+          <li data-i18n="foundationDefV2"><strong>V2</strong>: volumen final total</li>
+        </ul>
+      </article>
+
+      <article class="info-card">
+        <h3 class="info-title" data-i18n="limitsTitle">Supuestos y uso correcto</h3>
+        <div class="info-text" data-i18n="limitsText1">
+          La ecuación C1V1 = C2V2 funciona cuando C1 y C2 representan la misma base de concentración.
+        </div>
+
+        <ul class="info-list">
+          <li data-i18n="limit1">✅ Válido: M ↔ mM ↔ μM (misma base molar)</li>
+          <li data-i18n="limit2">✅ Válido: mg/mL ↔ mg/mL</li>
+          <li data-i18n="limit3">✅ Válido: % ↔ % (misma convención)</li>
+          <li data-i18n="limit4">❌ No válido: convertir M ↔ mg/mL o % sin MW/densidad</li>
+        </ul>
+
+        <div class="info-text" data-i18n="limitsText2" style="margin-top: 8px;">
+          Si necesitas convertir entre bases (por ejemplo, molaridad a mg/mL), primero debes usar información adicional como peso molecular, densidad o pureza.
+        </div>
+      </article>
+    </section>
+
+    <footer class="footer-author">
+      <strong data-i18n="author">Autor: Emiliano Balderas</strong><br />
+      <span data-i18n="authorBio">
+        Ingeniero en Biotecnología | Estudiante de Doctorado en Bioquímica, IBt-UNAM
+      </span>
     </footer>
   </div>
 
   <script>
+    /**
+     * ===========================================
+     * DiluteIt Front-End (Refactor)
+     * ===========================================
+     * Goals:
+     * - MolarPrep / CellSplit style consistency
+     * - Clear and modular logic
+     * - Better input validation and error messages
+     * - PWA install button support
+     *
+     * Core model:
+     *   C1 * V1 = C2 * V2
+     *
+     * Notes:
+     * - Volume units are internally normalized to liters.
+     * - Concentration units are normalized within a "kind":
+     *   molar / massvol / percent
+     * - C1 and C2 must use compatible concentration kinds.
+     */
+
+    const APP = {
+      currentLang: "es",
+      currentTarget: "v1",
+      deferredInstallPrompt: null,
+    };
+
     const I18N = {
       es: {
         subtitle: "Host Cell Lab Tools",
-        instruction: "Selecciona la variable a calcular:",
-        btnCalc: "Resolver Incógnita",
+        btnDocs: "[ Documentación / Repo ]",
+        btnClear: "[ Limpiar todo ]",
+        btnInstall: "[ Instalar App ]",
+
+        solverTitle: "01. Solver universal de dilución",
+        solverHint: "Selecciona la incógnita y resuelve con C1V1 = C2V2",
+        instruction: "Selecciona la variable a calcular",
+
+        lblC1: "C1 (Stock)",
+        lblV1: "V1 (Inóculo / Alícuota)",
+        lblC2: "C2 (Final)",
+        lblV2: "V2 (Volumen final)",
+
+        noteC: "C1 y C2 deben estar en bases compatibles (molar con molar, % con %, etc.)",
+        noteV: "V1 y V2 se convierten internamente a litros",
+        noteC2: "La ecuación conserva cantidad de soluto, no convierte química entre bases distintas",
+
+        btnCalc: "Resolver incógnita",
+        resultLabelDefault: "Resultado",
+        resultMetaPrefix: "Variable resuelta",
+        statusOk: "✔️ Cálculo completado.",
+        statusError: "⚠️ Verifica entradas y unidades.",
+
+        targetPlaceholder: "RESULTADO",
+        normalPlaceholder: "0.0",
+
+        errGeneric: "ERR",
+        errMissing: "Ingresa valores válidos (> 0) en las tres variables conocidas.",
+        errZeroDivision: "No se puede dividir entre cero.",
+        errKindMismatch: "C1 y C2 deben usar la misma base de concentración (molar / mg/mL / %).",
+
+        resultLabel_v1: "V1 (Inóculo / Alícuota)",
+        resultLabel_c1: "C1 (Stock)",
+        resultLabel_c2: "C2 (Final)",
+        resultLabel_v2: "V2 (Volumen final)",
+
+        foundationTitle: "Fundamento de la técnica",
+        foundationText1: "DiluteIt aplica la ecuación de dilución basada en conservación de la cantidad de soluto entre una solución stock y una solución final.",
+        foundationText2: "La app permite resolver cualquiera de las cuatro variables (C1, V1, C2 o V2), siempre que ingreses tres valores válidos y unidades compatibles.",
+        foundationDefC1: "<strong>C1</strong>: concentración de la solución stock",
+        foundationDefV1: "<strong>V1</strong>: volumen de stock (alícuota/inóculo)",
+        foundationDefC2: "<strong>C2</strong>: concentración objetivo final",
+        foundationDefV2: "<strong>V2</strong>: volumen final total",
+
+        limitsTitle: "Supuestos y uso correcto",
+        limitsText1: "La ecuación C1V1 = C2V2 funciona cuando C1 y C2 representan la misma base de concentración.",
+        limit1: "✅ Válido: M ↔ mM ↔ μM (misma base molar)",
+        limit2: "✅ Válido: mg/mL ↔ mg/mL",
+        limit3: "✅ Válido: % ↔ % (misma convención)",
+        limit4: "❌ No válido: convertir M ↔ mg/mL o % sin MW/densidad",
+        limitsText2: "Si necesitas convertir entre bases (por ejemplo, molaridad a mg/mL), primero debes usar información adicional como peso molecular, densidad o pureza.",
+
         author: "Autor: Emiliano Balderas",
-        lblC1: "C1 (Stock)", lblV1: "V1 (Inóculo)", lblC2: "C2 (Final)", lblV2: "V2 (Vol. Final)"
+        authorBio: "Ingeniero en Biotecnología | Estudiante de Doctorado en Bioquímica, IBt-UNAM",
       },
+
       en: {
         subtitle: "Host Cell Lab Tools",
-        instruction: "Select variable to calculate:",
-        btnCalc: "Solve Unknown",
+        btnDocs: "[ Docs / Repo ]",
+        btnClear: "[ Clear all ]",
+        btnInstall: "[ Install App ]",
+
+        solverTitle: "01. Universal dilution solver",
+        solverHint: "Select the unknown and solve with C1V1 = C2V2",
+        instruction: "Select the variable to calculate",
+
+        lblC1: "C1 (Stock)",
+        lblV1: "V1 (Inoculum / Aliquot)",
+        lblC2: "C2 (Final)",
+        lblV2: "V2 (Final volume)",
+
+        noteC: "C1 and C2 must use compatible concentration bases (molar with molar, % with %, etc.)",
+        noteV: "V1 and V2 are internally converted to liters",
+        noteC2: "The equation conserves solute amount; it does not convert chemistry across different bases",
+
+        btnCalc: "Solve unknown",
+        resultLabelDefault: "Result",
+        resultMetaPrefix: "Solved variable",
+        statusOk: "✔️ Calculation completed.",
+        statusError: "⚠️ Check inputs and units.",
+
+        targetPlaceholder: "RESULT",
+        normalPlaceholder: "0.0",
+
+        errGeneric: "ERR",
+        errMissing: "Enter valid values (> 0) for the three known variables.",
+        errZeroDivision: "Division by zero is not allowed.",
+        errKindMismatch: "C1 and C2 must use the same concentration basis (molar / mg/mL / %).",
+
+        resultLabel_v1: "V1 (Inoculum / Aliquot)",
+        resultLabel_c1: "C1 (Stock)",
+        resultLabel_c2: "C2 (Final)",
+        resultLabel_v2: "V2 (Final volume)",
+
+        foundationTitle: "Method foundation",
+        foundationText1: "DiluteIt applies the dilution equation based on conservation of solute amount between a stock solution and a final solution.",
+        foundationText2: "The app can solve any of the four variables (C1, V1, C2, or V2), as long as three valid values and compatible units are provided.",
+        foundationDefC1: "<strong>C1</strong>: stock solution concentration",
+        foundationDefV1: "<strong>V1</strong>: stock volume (aliquot/inoculum)",
+        foundationDefC2: "<strong>C2</strong>: target final concentration",
+        foundationDefV2: "<strong>V2</strong>: final total volume",
+
+        limitsTitle: "Assumptions and correct use",
+        limitsText1: "The equation C1V1 = C2V2 is valid when C1 and C2 represent the same concentration basis.",
+        limit1: "✅ Valid: M ↔ mM ↔ μM (same molar basis)",
+        limit2: "✅ Valid: mg/mL ↔ mg/mL",
+        limit3: "✅ Valid: % ↔ % (same convention)",
+        limit4: "❌ Not valid: converting M ↔ mg/mL or % without MW/density",
+        limitsText2: "If you need cross-basis conversion (for example, molarity to mg/mL), additional information is required, such as molecular weight, density, or purity.",
+
         author: "Author: Emiliano Balderas",
-        lblC1: "C1 (Stock)", lblV1: "V1 (Inoculum)", lblC2: "C2 (Target)", lblV2: "V2 (Total Vol)"
+        authorBio: "Biotechnology Engineer | PhD Student in Biochemistry, IBt-UNAM",
       }
     };
 
-    let currentTarget = "v1";
-    let currentLang = "es";
+    /**
+     * Central DOM map for easier maintenance.
+     */
+    const DOM = {
+      // Lang
+      btnEs: document.getElementById("btn-es"),
+      btnEn: document.getElementById("btn-en"),
 
-    // Switch Target Logic
-    document.querySelectorAll('.target-option').forEach(opt => {
-      opt.addEventListener('click', () => {
-        document.querySelectorAll('.target-option').forEach(o => o.classList.remove('active'));
-        opt.classList.add('active');
-        currentTarget = opt.dataset.var;
-        
-        // UI Reset
-        document.querySelectorAll('input').forEach(i => {
-          i.classList.remove('target-field');
-          i.placeholder = "0.0";
-          i.disabled = false;
-        });
-        const targetInput = document.getElementById(`val-${currentTarget}`);
-        targetInput.classList.add('target-field');
-        targetInput.placeholder = "RESULTADO";
-        targetInput.value = "";
+      // Top controls
+      btnClear: document.getElementById("btn-clear"),
+      btnInstall: document.getElementById("install-btn"),
+
+      // Card
+      solverCard: document.getElementById("solver-card"),
+      targetSelector: document.getElementById("target-selector"),
+      targetOptions: Array.from(document.querySelectorAll(".target-option")),
+
+      // Inputs
+      inputs: {
+        c1: document.getElementById("val-c1"),
+        v1: document.getElementById("val-v1"),
+        c2: document.getElementById("val-c2"),
+        v2: document.getElementById("val-v2"),
+      },
+
+      units: {
+        c1: document.getElementById("unit-c1"),
+        v1: document.getElementById("unit-v1"),
+        c2: document.getElementById("unit-c2"),
+        v2: document.getElementById("unit-v2"),
+      },
+
+      labels: {
+        c1: document.getElementById("lbl-c1"),
+        v1: document.getElementById("lbl-v1"),
+        c2: document.getElementById("lbl-c2"),
+        v2: document.getElementById("lbl-v2"),
+      },
+
+      btnCalculate: document.getElementById("btn-calculate"),
+
+      // Result
+      resultBox: document.getElementById("result-box"),
+      resultLabel: document.getElementById("result-label"),
+      resultValue: document.getElementById("result-value"),
+      resultMeta: document.getElementById("result-meta"),
+      statusLine: document.getElementById("status-line"),
+    };
+
+    /* =========================
+       Utilities
+       ========================= */
+
+    function t(key) {
+      const pack = I18N[APP.currentLang] || I18N.es;
+      return pack[key] ?? key;
+    }
+
+    function parsePositiveNumber(inputEl) {
+      const value = Number.parseFloat(inputEl.value);
+      return Number.isFinite(value) && value > 0 ? value : NaN;
+    }
+
+    function parseVolumeUnit(selectEl) {
+      const factorToLiters = Number.parseFloat(selectEl.value);
+      return {
+        factor: factorToLiters, // e.g. mL -> 0.001 L
+        label: selectEl.options[selectEl.selectedIndex].text,
+      };
+    }
+
+    function parseConcentrationUnit(selectEl) {
+      // Encoded as "kind:factor", e.g. "molar:0.001"
+      const raw = selectEl.value;
+      const [kind, factorStr] = raw.split(":");
+      const factor = Number.parseFloat(factorStr);
+      return {
+        kind,
+        factor,
+        label: selectEl.options[selectEl.selectedIndex].text,
+      };
+    }
+
+    function normalizeValuesToBase() {
+      // Volumes -> liters
+      const v1Value = parsePositiveNumber(DOM.inputs.v1);
+      const v2Value = parsePositiveNumber(DOM.inputs.v2);
+      const v1Unit = parseVolumeUnit(DOM.units.v1);
+      const v2Unit = parseVolumeUnit(DOM.units.v2);
+
+      // Concentrations -> base of selected kind (molar / mg/mL / %)
+      const c1Value = parsePositiveNumber(DOM.inputs.c1);
+      const c2Value = parsePositiveNumber(DOM.inputs.c2);
+      const c1Unit = parseConcentrationUnit(DOM.units.c1);
+      const c2Unit = parseConcentrationUnit(DOM.units.c2);
+
+      return {
+        inputs: { c1Value, v1Value, c2Value, v2Value },
+        units: { c1Unit, v1Unit, c2Unit, v2Unit },
+
+        // base-normalized values (if inputs are present)
+        base: {
+          c1: Number.isFinite(c1Value) ? c1Value * c1Unit.factor : NaN,
+          v1: Number.isFinite(v1Value) ? v1Value * v1Unit.factor : NaN,
+          c2: Number.isFinite(c2Value) ? c2Value * c2Unit.factor : NaN,
+          v2: Number.isFinite(v2Value) ? v2Value * v2Unit.factor : NaN,
+        }
+      };
+    }
+
+    function formatNumber(value, decimals = 6) {
+      if (!Number.isFinite(value)) return t("errGeneric");
+
+      // Compact formatting for readability
+      if (Math.abs(value) >= 1000 || (Math.abs(value) > 0 && Math.abs(value) < 0.001)) {
+        return value.toExponential(4);
+      }
+      return value.toFixed(decimals).replace(/\.?0+$/, "");
+    }
+
+    function showResultBox({ isError = false } = {}) {
+      DOM.resultBox.classList.add("is-visible");
+      DOM.resultBox.classList.toggle("is-error", isError);
+    }
+
+    function hideResultBox() {
+      DOM.resultBox.classList.remove("is-visible", "is-error");
+    }
+
+    function setCardValidity(isValid) {
+      DOM.solverCard.classList.toggle("is-invalid", !isValid);
+    }
+
+    function setStatus(message, isError = false) {
+      DOM.statusLine.textContent = message;
+      DOM.statusLine.style.color = isError ? "#ff8a80" : "";
+    }
+
+    function getVariableDisplayName(variableKey) {
+      return t(`resultLabel_${variableKey}`);
+    }
+
+    function getSelectedUnitLabel(variableKey) {
+      return DOM.units[variableKey].options[DOM.units[variableKey].selectedIndex].text;
+    }
+
+    function setInputPlaceholderForLanguage() {
+      const target = APP.currentTarget;
+      for (const key of ["c1", "v1", "c2", "v2"]) {
+        DOM.inputs[key].placeholder = (key === target) ? t("targetPlaceholder") : t("normalPlaceholder");
+      }
+    }
+
+    /* =========================
+       UI State: Target Selection
+       ========================= */
+
+    function setTarget(variableKey) {
+      APP.currentTarget = variableKey;
+
+      DOM.targetOptions.forEach((option) => {
+        const isActive = option.dataset.var === variableKey;
+        option.classList.toggle("active", isActive);
+        option.setAttribute("aria-selected", isActive ? "true" : "false");
       });
-    });
 
-    // Calculation Engine
-    document.getElementById('btn-calculate').addEventListener('click', () => {
-      const c1 = parseFloat(document.getElementById('val-c1').value) * parseFloat(document.getElementById('unit-c1').value);
-      const v1 = parseFloat(document.getElementById('val-v1').value) * parseFloat(document.getElementById('unit-v1').value);
-      const c2 = parseFloat(document.getElementById('val-c2').value) * parseFloat(document.getElementById('unit-c2').value);
-      const v2 = parseFloat(document.getElementById('val-v2').value) * parseFloat(document.getElementById('unit-v2').value);
+      // Highlight target input + label
+      for (const key of ["c1", "v1", "c2", "v2"]) {
+        DOM.inputs[key].classList.remove("target-field");
+        DOM.labels[key].classList.remove("label-target");
+      }
 
-      let res = 0;
-      let outId = `val-${currentTarget}`;
-      let outUnit = parseFloat(document.getElementById(`unit-${currentTarget}`).value);
+      DOM.inputs[variableKey].classList.add("target-field");
+      DOM.labels[variableKey].classList.add("label-target");
 
+      // Clear only the target field to avoid confusion
+      DOM.inputs[variableKey].value = "";
+      setInputPlaceholderForLanguage();
+
+      // Clear result panel state
+      hideResultBox();
+      setCardValidity(true);
+    }
+
+    /* =========================
+       Calculation Engine
+       =========================
+       Equation: C1 * V1 = C2 * V2
+       Solve one unknown from the remaining three.
+     */
+    function calculateDilution() {
+      const { inputs, units, base } = normalizeValuesToBase();
+      const target = APP.currentTarget;
+
+      // Validate concentration basis compatibility (C1 and C2)
+      // They must represent the same "kind" (molar / massvol / percent)
+      if (units.c1Unit.kind !== units.c2Unit.kind) {
+        renderError(t("errKindMismatch"));
+        return;
+      }
+
+      // Determine known variables (all except target) must be valid positive numbers
+      const required = ["c1", "v1", "c2", "v2"].filter((key) => key !== target);
+
+      const missingOrInvalid = required.some((key) => !Number.isFinite(base[key]) || base[key] <= 0);
+      if (missingOrInvalid) {
+        renderError(t("errMissing"));
+        return;
+      }
+
+      let resultBase = NaN;
+
+      // Solve in base-normalized units
+      if (target === "v1") {
+        // V1 = (C2 * V2) / C1
+        if (base.c1 === 0) return renderError(t("errZeroDivision"));
+        resultBase = (base.c2 * base.v2) / base.c1;
+      } else if (target === "c1") {
+        // C1 = (C2 * V2) / V1
+        if (base.v1 === 0) return renderError(t("errZeroDivision"));
+        resultBase = (base.c2 * base.v2) / base.v1;
+      } else if (target === "c2") {
+        // C2 = (C1 * V1) / V2
+        if (base.v2 === 0) return renderError(t("errZeroDivision"));
+        resultBase = (base.c1 * base.v1) / base.v2;
+      } else if (target === "v2") {
+        // V2 = (C1 * V1) / C2
+        if (base.c2 === 0) return renderError(t("errZeroDivision"));
+        resultBase = (base.c1 * base.v1) / base.c2;
+      }
+
+      if (!Number.isFinite(resultBase) || resultBase <= 0) {
+        renderError(t("errGeneric"));
+        return;
+      }
+
+      // Convert result back to the unit selected for the target variable
+      let resultDisplay;
+      let resultUnitLabel;
+
+      if (target === "v1" || target === "v2") {
+        const targetVolumeUnit = parseVolumeUnit(DOM.units[target]);
+        resultDisplay = resultBase / targetVolumeUnit.factor;
+        resultUnitLabel = targetVolumeUnit.label;
+      } else {
+        const targetConcUnit = parseConcentrationUnit(DOM.units[target]);
+        resultDisplay = resultBase / targetConcUnit.factor;
+        resultUnitLabel = targetConcUnit.label;
+      }
+
+      // Write back into target field and result box
+      DOM.inputs[target].value = formatNumber(resultDisplay, 6);
+
+      DOM.resultLabel.textContent = getVariableDisplayName(target);
+      DOM.resultValue.textContent = `${formatNumber(resultDisplay, 6)} ${resultUnitLabel}`;
+      DOM.resultMeta.innerHTML = `${t("resultMetaPrefix")}: <strong>${target.toUpperCase()}</strong>`;
+      setStatus(t("statusOk"), false);
+
+      setCardValidity(true);
+      showResultBox({ isError: false });
+    }
+
+    function renderError(message) {
+      DOM.resultLabel.textContent = t("resultLabelDefault");
+      DOM.resultValue.textContent = t("errGeneric");
+      DOM.resultMeta.textContent = message;
+      setStatus(t("statusError"), true);
+      setCardValidity(false);
+      showResultBox({ isError: true });
+    }
+
+    /* =========================
+       Reset Helpers
+       ========================= */
+
+    function clearAll() {
+      // Keep the selected target and preferred units; clear values only
+      for (const key of ["c1", "v1", "c2", "v2"]) {
+        DOM.inputs[key].value = "";
+      }
+
+      hideResultBox();
+      setCardValidity(true);
+      setInputPlaceholderForLanguage();
+
+      // Clear target field explicitly again (just to keep UI intention obvious)
+      DOM.inputs[APP.currentTarget].value = "";
+    }
+
+    /* =========================
+       i18n
+       ========================= */
+
+    function applyTranslations(lang) {
+      const pack = I18N[lang] || I18N.es;
+
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        const key = node.getAttribute("data-i18n");
+        if (pack[key]) node.innerHTML = pack[key];
+      });
+
+      DOM.btnEs.classList.toggle("active", lang === "es");
+      DOM.btnEn.classList.toggle("active", lang === "en");
+
+      setInputPlaceholderForLanguage();
+
+      // If result panel is visible and not error, refresh its labels to current language
+      if (DOM.resultBox.classList.contains("is-visible") && !DOM.resultBox.classList.contains("is-error")) {
+        DOM.resultLabel.textContent = getVariableDisplayName(APP.currentTarget);
+        if (DOM.resultMeta.textContent.trim()) {
+          DOM.resultMeta.innerHTML = `${t("resultMetaPrefix")}: <strong>${APP.currentTarget.toUpperCase()}</strong>`;
+          setStatus(t("statusOk"), false);
+        }
+      }
+    }
+
+    function setLanguage(lang) {
+      if (!I18N[lang]) return;
+      APP.currentLang = lang;
+      applyTranslations(lang);
       try {
-        if (currentTarget === "v1") res = (c2 * v2) / c1;
-        else if (currentTarget === "c1") res = (c2 * v2) / v1;
-        else if (currentTarget === "c2") res = (c1 * v1) / v2;
-        else if (currentTarget === "v2") res = (c1 * v1) / c2;
+        localStorage.setItem("diluteit_lang", lang);
+      } catch (_) { /* no-op */ }
+    }
 
-        document.getElementById(outId).value = (res / outUnit).toFixed(4);
-      } catch (e) {
-        alert("Error en el cálculo. Verifica que los valores no sean cero.");
-      }
-    });
+    function loadSavedLanguage() {
+      try {
+        const saved = localStorage.getItem("diluteit_lang");
+        if (saved && I18N[saved]) APP.currentLang = saved;
+      } catch (_) { /* no-op */ }
+    }
 
-    // Lang Switch
-    const setLang = (l) => {
-      currentLang = l;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        el.innerText = I18N[l][el.dataset.i18n];
+    /* =========================
+       PWA Install + SW
+       ========================= */
+
+    function setupInstallPrompt() {
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        APP.deferredInstallPrompt = event;
+        DOM.btnInstall.hidden = false;
       });
-      document.getElementById('btn-es').classList.toggle('active', l === 'es');
-      document.getElementById('btn-en').classList.toggle('active', l === 'en');
-    };
 
-    document.getElementById('btn-es').addEventListener('click', () => setLang('es'));
-    document.getElementById('btn-en').addEventListener('click', () => setLang('en'));
+      DOM.btnInstall.addEventListener("click", async () => {
+        if (!APP.deferredInstallPrompt) return;
+        APP.deferredInstallPrompt.prompt();
+        APP.deferredInstallPrompt = null;
+        DOM.btnInstall.hidden = true;
+      });
+    }
+
+    function registerServiceWorker() {
+      if (!("serviceWorker" in navigator)) return;
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          console.warn("SW registration failed:", error);
+        });
+      });
+    }
+
+    /* =========================
+       Event Binding
+       ========================= */
+
+    function bindEvents() {
+      // Target selector
+      DOM.targetOptions.forEach((option) => {
+        option.addEventListener("click", () => setTarget(option.dataset.var));
+      });
+
+      // Main actions
+      DOM.btnCalculate.addEventListener("click", calculateDilution);
+      DOM.btnClear.addEventListener("click", clearAll);
+
+      // Language
+      DOM.btnEs.addEventListener("click", () => setLanguage("es"));
+      DOM.btnEn.addEventListener("click", () => setLanguage("en"));
+
+      // Enter key on inputs triggers calculation
+      Object.values(DOM.inputs).forEach((inputEl) => {
+        inputEl.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            calculateDilution();
+          }
+        });
+
+        inputEl.addEventListener("input", () => {
+          setCardValidity(true);
+          DOM.resultBox.classList.remove("is-error");
+        });
+      });
+
+      // Changing units also clears error highlight
+      Object.values(DOM.units).forEach((selectEl) => {
+        selectEl.addEventListener("change", () => {
+          setCardValidity(true);
+          DOM.resultBox.classList.remove("is-error");
+        });
+      });
+    }
+
+    /* =========================
+       App Init
+       ========================= */
+
+    function init() {
+      loadSavedLanguage();
+      applyTranslations(APP.currentLang);
+      setTarget(APP.currentTarget); // applies target highlight + placeholders
+      hideResultBox();
+      bindEvents();
+      setupInstallPrompt();
+      registerServiceWorker();
+    }
+
+    init();
   </script>
 </body>
 </html>
