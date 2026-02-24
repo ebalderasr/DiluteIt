@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DiluteIt | Host Cell</title>
+
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DiluteIt" />
+
+  <style>
+    :root {
+      --bg-main: #0a0a0a;
+      --bg-card: #171717;
+      --bg-input: #1f1f1f;
+      --accent: #ff9800; /* Safety Orange */
+      --accent-glow: rgba(255, 152, 0, 0.15);
+      --text-pri: #eef3e6;
+      --text-sec: #a7b394;
+      --border-color: #333;
+      --danger: #ef5350;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-pri);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .mono { font-family: "Courier New", Courier, monospace; }
+
+    .container { max-width: 800px; margin: 0 auto; }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+    }
+
+    .brand h1 { margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+    .brand p { margin: 0; font-size: 0.8rem; color: var(--text-sec); text-transform: uppercase; }
+
+    .lang-switch button {
+      background: none; border: none; color: var(--text-sec); 
+      font-weight: bold; cursor: pointer; padding: 5px;
+    }
+    .lang-switch button.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label { font-size: 0.75rem; color: var(--text-sec); text-transform: uppercase; font-weight: bold; }
+    
+    .input-row { display: flex; gap: 5px; }
+
+    input, select {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-pri);
+      padding: 12px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    input:focus { border-color: var(--accent); }
+    input.target-field { border: 2px solid var(--accent); background: var(--accent-glow); }
+
+    /* Control Selector */
+    .target-selector {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      background: var(--bg-input);
+      padding: 10px;
+      border-radius: var(--radius);
+    }
+
+    .target-option {
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 8px 12px;
+      border-radius: 4px;
+      color: var(--text-sec);
+    }
+
+    .target-option.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .btn-calc {
+      width: 100%;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 15px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+      color: var(--text-sec);
+    }
+
+    @media (max-width: 600px) {
+      .input-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h1 class="mono">DiluteIt</h1>
+        <p data-i18n="subtitle">Host Cell Lab Tools</p>
+      </div>
+      <div class="lang-switch">
+        <button id="btn-es" class="active">ES</button> | <button id="btn-en">EN</button>
+      </div>
+    </header>
+
+    <div class="card">
+      <p style="font-size: 0.7rem; color: var(--text-sec); text-transform: uppercase; margin-bottom: 15px;" data-i18n="instruction">
+        Selecciona la variable a calcular:
+      </p>
+      
+      <div class="target-selector">
+        <div class="target-option active" data-var="v1">V1</div>
+        <div class="target-option" data-var="c1">C1</div>
+        <div class="target-option" data-var="c2">C2</div>
+        <div class="target-option" data-var="v2">V2</div>
+      </div>
+
+      <div class="input-grid">
+        <div class="field-group">
+          <label data-i18n="lblC1">C1 (Stock)</label>
+          <div class="input-row">
+            <input type="number" id="val-c1" class="mono" placeholder="0.0">
+            <select id="unit-c1">
+              <option value="1">M</option>
+              <option value="0.001">mM</option>
+              <option value="0.000001">μM</option>
+              <option value="1">mg/mL</option>
+              <option value="1">%</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label data-i18n="lblV1">V1 (Inóculo/Alícuota)</label>
+          <div class="input-row">
+            <input type="number" id="val-v1" class="mono target-field" placeholder="Target">
+            <select id="unit-v1">
+              <option value="1">L</option>
+              <option value="0.001" selected>mL</option>
+              <option value="0.000001">μL</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label data-i18n="lblC2">C2 (Final)</label>
+          <div class="input-row">
+            <input type="number" id="val-c2" class="mono" placeholder="0.0">
+            <select id="unit-c2">
+              <option value="1">M</option>
+              <option value="0.001" selected>mM</option>
+              <option value="0.000001">μM</option>
+              <option value="1">mg/mL</option>
+              <option value="1">%</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label data-i18n="lblV2">V2 (Vol. Final)</label>
+          <div class="input-row">
+            <input type="number" id="val-v2" class="mono" placeholder="0.0">
+            <select id="unit-v2">
+              <option value="1">L</option>
+              <option value="0.001" selected>mL</option>
+              <option value="0.000001">μL</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-calc" id="btn-calculate" data-i18n="btnCalc">Resolver Incógnita</button>
+    </div>
+
+    <footer>
+      <p><strong data-i18n="author">Autor: Emiliano Balderas</strong> | IBt-UNAM</p>
+      <p class="mono" style="font-size: 0.7rem;">C1V1 = C2V2</p>
+    </footer>
+  </div>
+
+  <script>
+    const I18N = {
+      es: {
+        subtitle: "Host Cell Lab Tools",
+        instruction: "Selecciona la variable a calcular:",
+        btnCalc: "Resolver Incógnita",
+        author: "Autor: Emiliano Balderas",
+        lblC1: "C1 (Stock)", lblV1: "V1 (Inóculo)", lblC2: "C2 (Final)", lblV2: "V2 (Vol. Final)"
+      },
+      en: {
+        subtitle: "Host Cell Lab Tools",
+        instruction: "Select variable to calculate:",
+        btnCalc: "Solve Unknown",
+        author: "Author: Emiliano Balderas",
+        lblC1: "C1 (Stock)", lblV1: "V1 (Inoculum)", lblC2: "C2 (Target)", lblV2: "V2 (Total Vol)"
+      }
+    };
+
+    let currentTarget = "v1";
+    let currentLang = "es";
+
+    // Switch Target Logic
+    document.querySelectorAll('.target-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.target-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        currentTarget = opt.dataset.var;
+        
+        // UI Reset
+        document.querySelectorAll('input').forEach(i => {
+          i.classList.remove('target-field');
+          i.placeholder = "0.0";
+          i.disabled = false;
+        });
+        const targetInput = document.getElementById(`val-${currentTarget}`);
+        targetInput.classList.add('target-field');
+        targetInput.placeholder = "RESULTADO";
+        targetInput.value = "";
+      });
+    });
+
+    // Calculation Engine
+    document.getElementById('btn-calculate').addEventListener('click', () => {
+      const c1 = parseFloat(document.getElementById('val-c1').value) * parseFloat(document.getElementById('unit-c1').value);
+      const v1 = parseFloat(document.getElementById('val-v1').value) * parseFloat(document.getElementById('unit-v1').value);
+      const c2 = parseFloat(document.getElementById('val-c2').value) * parseFloat(document.getElementById('unit-c2').value);
+      const v2 = parseFloat(document.getElementById('val-v2').value) * parseFloat(document.getElementById('unit-v2').value);
+
+      let res = 0;
+      let outId = `val-${currentTarget}`;
+      let outUnit = parseFloat(document.getElementById(`unit-${currentTarget}`).value);
+
+      try {
+        if (currentTarget === "v1") res = (c2 * v2) / c1;
+        else if (currentTarget === "c1") res = (c2 * v2) / v1;
+        else if (currentTarget === "c2") res = (c1 * v1) / v2;
+        else if (currentTarget === "v2") res = (c1 * v1) / c2;
+
+        document.getElementById(outId).value = (res / outUnit).toFixed(4);
+      } catch (e) {
+        alert("Error en el cálculo. Verifica que los valores no sean cero.");
+      }
+    });
+
+    // Lang Switch
+    const setLang = (l) => {
+      currentLang = l;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.innerText = I18N[l][el.dataset.i18n];
+      });
+      document.getElementById('btn-es').classList.toggle('active', l === 'es');
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    };
+
+    document.getElementById('btn-es').addEventListener('click', () => setLang('es'));
+    document.getElementById('btn-en').addEventListener('click', () => setLang('en'));
+  </script>
+</body>
+</html>
