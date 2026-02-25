@@ -4,10 +4,11 @@
    - Precache core app shell
    - Cache versioning
    - Offline fallback for navigation
-   - Same-origin static assets: stale-while-revalidate
+   - Same-origin assets: stale-while-revalidate
    ========================================== */
 
-const CACHE_NAME = "diluteit-v2";
+const CACHE_NAME = "diluteit-v3";
+
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -15,13 +16,14 @@ const APP_SHELL = [
   "./icon-192.png",
   "./icon-512.png",
   "./icon-maskable-192.png",
-  "./icon-maskable-512.png"
+  "./icon-maskable-512.png",
+  "./apple-touch-icon-180.png"
 ];
 
 /**
- * Install:
- * - Precache core files
- * - Activate new SW immediately
+ * INSTALL
+ * - Cache app shell
+ * - Activate immediately
  */
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -34,51 +36,61 @@ self.addEventListener("install", (event) => {
 });
 
 /**
- * Activate:
- * - Remove old caches
+ * ACTIVATE
+ * - Remove old cache versions
  * - Take control of open pages
  */
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
+
       await Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
           return Promise.resolve();
         })
       );
+
       await self.clients.claim();
     })()
   );
 });
 
 /**
- * Fetch strategy
+ * FETCH STRATEGY
  *
- * 1) Navigations (HTML pages): network-first, fallback to cached app shell
- * 2) Same-origin GET assets: stale-while-revalidate
- * 3) Cross-origin: let browser handle
+ * 1) HTML navigation requests: network-first
+ *    Fallback to cached index when offline.
+ *
+ * 2) Same-origin static files: stale-while-revalidate
+ *    Return cached version immediately (if present),
+ *    then refresh cache in background.
+ *
+ * 3) Other requests: browser default behavior.
  */
 self.addEventListener("fetch", (event) => {
   const request = event.request;
 
-  // Only handle GET
+  // Only handle GET requests
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
 
-  // 1) Navigation requests (user opens/reloads app)
+  // 1) Navigation (page loads / reloads)
   if (request.mode === "navigate") {
     event.respondWith(
       (async () => {
         try {
-          // Try fresh network first
           const networkResponse = await fetch(request);
-          // Optionally cache the latest navigation response
+
+          // Update cached shell page
           const cache = await caches.open(CACHE_NAME);
           cache.put("./index.html", networkResponse.clone());
+
           return networkResponse;
         } catch (error) {
           // Offline fallback
@@ -86,9 +98,9 @@ self.addEventListener("fetch", (event) => {
             (await caches.match("./index.html")) ||
             (await caches.match("./")) ||
             (await caches.match("/index.html"));
+
           if (cachedIndex) return cachedIndex;
 
-          // Last resort: generic response
           return new Response("Offline", {
             status: 503,
             statusText: "Offline",
@@ -100,35 +112,35 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2) Same-origin static assets (icons, manifest, css/js embedded HTML dependencies)
+  // 2) Same-origin assets (icons, manifest, etc.)
   if (isSameOrigin) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME);
-        const cached = await cache.match(request);
+        const cachedResponse = await cache.match(request);
 
-        const networkFetch = fetch(request)
-          .then((response) => {
-            // Cache successful basic responses
-            if (response && response.ok && response.type === "basic") {
-              cache.put(request, response.clone());
+        const networkPromise = fetch(request)
+          .then((networkResponse) => {
+            if (
+              networkResponse &&
+              networkResponse.ok &&
+              (networkResponse.type === "basic" || networkResponse.type === "default")
+            ) {
+              cache.put(request, networkResponse.clone());
             }
-            return response;
+            return networkResponse;
           })
           .catch(() => null);
 
-        // Stale-while-revalidate:
-        // return cache immediately if present, else wait for network
-        if (cached) {
-          // update in background
-          event.waitUntil(networkFetch);
-          return cached;
+        // Stale-while-revalidate
+        if (cachedResponse) {
+          event.waitUntil(networkPromise);
+          return cachedResponse;
         }
 
-        const networkResponse = await networkFetch;
+        const networkResponse = await networkPromise;
         if (networkResponse) return networkResponse;
 
-        // Fallback (nothing cached + no network)
         return new Response("", { status: 404, statusText: "Not Found" });
       })()
     );
