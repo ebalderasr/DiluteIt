@@ -596,7 +596,9 @@
     .target-field {
       border: 2px solid rgba(255, 149, 0, 0.70) !important;
       background: rgba(255, 149, 0, 0.08) !important;
+      cursor: default;
     }
+    input[readonly].target-field { pointer-events: none; }
     .label-target { color: var(--tint); font-weight: 700; }
 
     /* ── Results ─────────────────────────────── */
@@ -615,8 +617,7 @@
     .result.visible { display: block; }
 
     .result.error {
-      border-color: rgba(255, 69, 58, 0.48);
-      box-shadow: 0 0 0 4px rgba(255, 69, 58, 0.12);
+      border-color: rgba(255, 69, 58, 0.30);
     }
 
     .result-head {
@@ -1381,13 +1382,15 @@
         btn.setAttribute('aria-selected', String(on));
       });
 
-      // highlight target label+field
+      // highlight target label+field; lock target input
       for (const key of ['c1','v1','c2','v2']){
         DOM.inputs[key].classList.remove('target-field');
         DOM.labels[key].classList.remove('label-target');
+        DOM.inputs[key].readOnly = false;
       }
       DOM.inputs[variableKey].classList.add('target-field');
       DOM.labels[variableKey].classList.add('label-target');
+      DOM.inputs[variableKey].readOnly = true;
 
       // clear target
       DOM.inputs[variableKey].value = '';
@@ -1462,11 +1465,7 @@
           <span class="tag">Volumes → L</span>
         </div>
       `;
-      DOM.statusLine.textContent = t('statusOk');
-
-      setCardValidity(true);
       showResult('normal');
-      setStatusPill('OK', 'ok');
     }
 
     function renderError(message){
@@ -1479,9 +1478,7 @@
       DOM.resultMeta.textContent = message;
       DOM.statusLine.textContent = t('statusError');
 
-      setCardValidity(false);
       showResult('error');
-      setStatusPill('Check', 'warn');
     }
 
     function updateResultLabelsOnly(){
