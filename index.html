@@ -378,6 +378,73 @@
       box-shadow: var(--shadow-sm);
     }
 
+    /* ── Target variable selector ────────────── */
+    .target-selector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      background: var(--bg-field);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--stroke-2);
+    }
+
+    .target-selector-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .seg-target {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      width: 100%;
+      background: var(--bg-elev);
+      backdrop-filter: var(--blur-sm);
+      -webkit-backdrop-filter: var(--blur-sm);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .seg-target button {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--secondary);
+      padding: 12px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 1.05rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      transition: background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+      white-space: nowrap;
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+
+    .seg-target button:active { transform: scale(0.97); }
+
+    .seg-target button[aria-selected="true"] {
+      background: var(--tint);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 3px 12px rgba(255, 149, 0, 0.36);
+    }
+
+    .target-hint {
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--tertiary);
+      text-align: center;
+      line-height: 1.45;
+    }
+
     /* ── Module tile ─────────────────────────── */
     .tiles {
       display: grid;
@@ -901,15 +968,15 @@
         </div>
 
         <div class="form">
-          <div class="field-group">
-            <label data-i18n="instruction">Selecciona la variable a calcular</label>
-            <div class="seg" id="target-seg" role="tablist" aria-label="Unknown selector">
-              <button type="button" class="mono" data-var="v1" role="tab" aria-selected="true">V1</button>
-              <button type="button" class="mono" data-var="c1" role="tab" aria-selected="false">C1</button>
-              <button type="button" class="mono" data-var="c2" role="tab" aria-selected="false">C2</button>
-              <button type="button" class="mono" data-var="v2" role="tab" aria-selected="false">V2</button>
+          <div class="target-selector">
+            <span class="target-selector-label" data-i18n="instruction">Selecciona la variable a calcular</span>
+            <div class="seg-target" id="target-seg" role="tablist" aria-label="Unknown selector">
+              <button type="button" data-var="v1" role="tab" aria-selected="true">V1</button>
+              <button type="button" data-var="c1" role="tab" aria-selected="false">C1</button>
+              <button type="button" data-var="c2" role="tab" aria-selected="false">C2</button>
+              <button type="button" data-var="v2" role="tab" aria-selected="false">V2</button>
             </div>
-            <div class="hint" data-i18n="noteCompat">C1 y C2 deben estar en bases compatibles (molar con molar, % con %, etc.)</div>
+            <span class="target-hint" data-i18n="noteCompat">C1 y C2 deben estar en bases compatibles (molar con molar, % con %, etc.)</span>
           </div>
 
           <div class="grid-2">
