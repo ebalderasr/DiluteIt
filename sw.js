@@ -7,7 +7,7 @@
    - Same-origin assets: stale-while-revalidate
    ========================================== */
 
-const CACHE_NAME = "diluteit-v3";
+const CACHE_NAME = "diluteit-v4";
 
 const APP_SHELL = [
   "./",
@@ -17,7 +17,9 @@ const APP_SHELL = [
   "./icon-512.png",
   "./icon-maskable-192.png",
   "./icon-maskable-512.png",
-  "./apple-touch-icon-180.png"
+  "./src/css/app.css",
+  "./src/js/i18n.js",
+  "./src/js/app.js"
 ];
 
 /**
