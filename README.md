@@ -1,205 +1,160 @@
-# 🧪 DiluteIt | Host Cell Lab Suite
-> **Universal dilution solver. Fast, clear, and lab-ready.**
+<div align="center">
 
-DiluteIt is a lightweight web app for solving the universal dilution equation (**C1V1 = C2V2**) in a clean, mobile-friendly interface.  
-It is part of **Host Cell**, a growing suite of practical laboratory and bioprocess tools built by **Emiliano Balderas** (IBt-UNAM).
+# DiluteIt
 
-<p align="center">
-  <img src="icon-512.png" width="180" alt="DiluteIt Logo">
-</p>
+### Universal dilution solver for lab and bioprocess workflows
 
-<p align="center">
-  <a href="https://ebalderasr.github.io/DiluteIt/">
-    <img src="https://img.shields.io/badge/🚀_Launch_Live_App-DiluteIt-ff9800?style=for-the-badge&labelColor=000000" alt="Launch DiluteIt App">
-  </a>
-</p>
+<a href="https://ebalderasr.github.io/DiluteIt/">
+  <img src="icon-512.png" alt="DiluteIt" width="120">
+</a>
 
-<p align="center">
-  <a href="https://github.com/ebalderasr/DiluteIt">Repo</a> •
-  <a href="https://ebalderasr.github.io/DiluteIt/">Live App</a>
-</p>
+<br>
+
+**[→ Open the live app](https://ebalderasr.github.io/DiluteIt/)**
+
+<br>
+
+[![Stack](https://img.shields.io/badge/Stack-HTML_·_CSS_·_JavaScript-4A90D9?style=for-the-badge)]()
+[![Focus](https://img.shields.io/badge/Focus-Dilution_Planning_·_Lab_Workflows-34C759?style=for-the-badge)]()
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
+[![Part of](https://img.shields.io/badge/Part_of-Host_Cell_Lab_Suite-5856D6?style=for-the-badge)](https://github.com/ebalderasr)
+
+</div>
 
 ---
 
 ## What is DiluteIt?
 
-**DiluteIt** solves one of the most common calculations in biotechnology and lab workflows: **dilution planning**.
+DiluteIt is a **browser-based dilution calculator** that solves for any one of the four variables in the dilution equation. You choose the unknown — C1, V1, C2, or V2 — provide the other three values with their units, and the app returns the result immediately.
 
-The app lets you solve for **any one** of the four variables in the dilution equation:
+It handles unit conversion within compatible concentration bases (M · mM · μM, mg/mL, %) and validates that the inputs are physically consistent before computing.
 
-- **C1** = stock concentration  
-- **V1** = stock volume (aliquot / inoculum)  
-- **C2** = target final concentration  
-- **V2** = final total volume  
-
-You choose the unknown, provide the other three values, and the app returns the result with unit-aware handling.
+No installation. No server. Runs entirely in the browser.
 
 ---
 
-## 🧬 Scientific Fundamentals
+## Why it matters
 
-DiluteIt applies the dilution equation derived from conservation of solute amount:
+Dilution calculations are among the most frequent arithmetic tasks at the bench, yet they are also a common source of pipetting and transcription errors. Without a dedicated tool:
 
-$$C_1V_1 = C_2V_2$$
+- Four different rearrangements of $C_1V_1 = C_2V_2$ must be recalled or derived on the fly
+- Unit scaling (M → mM → μM) adds an error-prone manual step
+- There is no validation that the concentration bases on both sides are compatible
+- Results written on scratch paper get lost or misread under lab conditions
 
-### Variable definitions
-- **C1**: concentration of the stock solution
-- **V1**: volume of stock used (aliquot / inoculum)
-- **C2**: desired final concentration
-- **V2**: final total volume
-
-### Rearranged forms (examples)
-Depending on the unknown variable, the app solves:
-
-$$V_1 = \frac{C_2 \times V_2}{C_1}$$
-
-$$C_1 = \frac{C_2 \times V_2}{V_1}$$
-
-$$C_2 = \frac{C_1 \times V_1}{V_2}$$
-
-$$V_2 = \frac{C_1 \times V_1}{C_2}$$
+DiluteIt eliminates all four problems in a single, mobile-ready interface.
 
 ---
 
-## ✅ Unit Logic (Important)
+## How it works
 
-DiluteIt supports practical concentration and volume units for routine lab use.
+### Solving for any variable
 
-### Supported concentration bases
-- **M**, **mM**, **μM** (molar basis)
-- **mg/mL** (mass/volume basis)
-- **%** (percentage basis)
+Select the unknown, enter the three known values, choose units, and click **Solve**:
 
-### Supported volume units
-- **L**
-- **mL**
-- **μL**
+| Unknown | What you provide | Typical use case |
+|---|---|---|
+| V1 | C1, C2, V2 | How much stock to pipette for a working solution |
+| C1 | V1, C2, V2 | Back-calculating the concentration of an unknown stock |
+| C2 | C1, V1, V2 | What concentration results from a given dilution |
+| V2 | C1, V1, C2 | What final volume a fixed aliquot can reach at a target density |
 
-### Correct use rule
-DiluteIt assumes **C1 and C2 use the same concentration basis**.
+### Unit handling
 
-✅ Valid examples:
-- M ↔ mM ↔ μM  
-- mg/mL ↔ mg/mL  
-- % ↔ %
+DiluteIt converts within compatible concentration bases automatically:
 
-❌ Not valid without extra information:
-- M ↔ mg/mL
-- % ↔ M
-- mg/mL ↔ % (unless convention + density/purity are defined)
+| Basis | Accepted units |
+|---|---|
+| Molar | M, mM, μM |
+| Mass/volume | mg/mL |
+| Percentage | % |
 
-If you need cross-basis conversion (for example, molarity to mg/mL), you must use additional data such as:
-- molecular weight (MW)
-- density
-- purity / assay
+C1 and C2 must share the same concentration basis. Cross-basis conversions (e.g. M → mg/mL) require additional data such as molecular weight or density and are outside the scope of the dilution equation.
+
+Volume units (L, mL, μL) are handled independently and can differ between V1 and V2.
 
 ---
 
-## ⚡ Features
+## Methods
 
-- **Universal Solver:** Choose any of the 4 variables as the unknown (C1, V1, C2, or V2)
-- **Unit-Aware Inputs:** Handles common lab concentration and volume units
-- **Compatibility Validation:** Warns when C1 and C2 use incompatible concentration bases
-- **Mobile-First UI:** High-contrast layout and large controls for real lab use
-- **Bilingual Interface:** Spanish / English toggle
-- **PWA Ready:** Installable on Android/iOS and usable offline after first load
-- **Host Cell Design System:** Visual consistency with other tools in the suite
+The app applies the conservation of solute amount:
 
----
+$$C_1 V_1 = C_2 V_2$$
 
-## 🔬 Typical Use Cases
+Rearranged for each unknown:
 
-DiluteIt is useful for:
-- preparing working solutions from concentrated stocks
-- serial dilution planning (step-by-step use)
-- quick aliquot calculations at the bench
-- training students on dilution logic
-- reducing manual calculator/transcription errors
+$$V_1 = \frac{C_2 \times V_2}{C_1} \qquad C_1 = \frac{C_2 \times V_2}{V_1}$$
+
+$$C_2 = \frac{C_1 \times V_1}{V_2} \qquad V_2 = \frac{C_1 \times V_1}{C_2}$$
 
 ---
 
-## 🚀 How to Use
+## Features
 
-1. **Select the unknown variable** (C1, V1, C2, or V2)
-2. Enter the other **three known values**
-3. Choose the corresponding **units**
-4. Click **Solve**
-5. Review the result and verify unit compatibility
-
-### Example
-If you need to prepare a final solution at **C2** from a stock **C1**:
-- Enter **C1**, **C2**, **V2**
-- Set **V1** as the unknown
-- DiluteIt returns the required aliquot volume (**V1**)
+| | |
+|---|---|
+| **Universal solver** | Solves for any of the four variables: C1, V1, C2, V2 |
+| **Unit-aware** | Handles M · mM · μM · mg/mL · % and L · mL · μL |
+| **Compatibility validation** | Warns when C1 and C2 use incompatible concentration bases |
+| **Offline-first PWA** | Service Worker caches all assets; works without internet after first load |
+| **Bilingual UI** | Full Spanish / English interface |
+| **No installation** | Opens instantly in any modern browser; installable on Android, iOS, and desktop |
 
 ---
 
-## 📱 Installation (PWA)
+## Tech stack
 
-DiluteIt can be installed as a Progressive Web App (PWA) for faster access and offline use.
+**Frontend**
 
-### Android / Desktop (Chrome, Edge)
-- Open the live app
-- Tap/click **Install App** (if shown)
-- Or use the browser install prompt/menu
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 
-### iPhone / iPad (Safari)
-- Open the live app
-- Tap **Share**
-- Select **Add to Home Screen**
+**Deployment**
 
-Once installed, the app can work offline after the required files are cached.
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=flat-square&logo=github&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 
----
-
-## ❓ FAQ
-
-**Q: Does DiluteIt convert molarity to mg/mL automatically?**
-**A:** No. The dilution equation preserves solute amount, but it does not perform cross-basis chemical conversions. You need MW (and sometimes density/purity) for that.
-
-**Q: Can I solve for any variable?**
-**A:** Yes. DiluteIt is a universal solver for **C1, V1, C2, or V2**, as long as the other three values are valid.
-
-**Q: Does it work offline?**
-**A:** Yes. After the first successful load (and installation, if desired), the service worker caches the app for offline use.
-
-**Q: Is it only for bioprocessing?**
-**A:** No. It was built within a biotech workflow, but the dilution math is broadly useful for many lab contexts.
+Fully static — no backend, no framework, no build step.
 
 ---
 
-## ⚠️ Notes and Limitations
+## Project structure
 
-* DiluteIt is a **calculation aid**, not a substitute for SOPs or experimental judgment.
-* Always verify:
-
-  * unit basis compatibility
-  * concentration conventions (% w/v, v/v, etc.)
-  * stock identity and labeling
-  * pipetting feasibility and practical volume limits
-* For critical workflows, follow institutional protocols and lab-specific validation practices.
-
----
-
-## 👨‍🔬 Author
-
-**Emiliano Balderas**
-Biotechnology Engineer | PhD Student in Biochemistry
-*Instituto de Biotecnología (IBt) - UNAM*
+```
+DiluteIt/
+├── index.html              ← markup only
+├── manifest.json           ← PWA manifest
+├── sw.js                   ← Service Worker (cache-first, offline support)
+├── icon-192.png
+├── icon-512.png
+├── icon-maskable-192.png
+└── icon-maskable-512.png
+```
 
 ---
 
-## 🧩 About Host Cell
+## Author
 
-**Host Cell** is a growing suite of practical lab and bioprocess tools focused on:
+**Emiliano Balderas Ramírez**
+Bioengineer · PhD Candidate in Biochemical Sciences
+Instituto de Biotecnología (IBt), UNAM
 
-* clarity
-* speed
-* reproducibility
-* real-world usability at the bench
-
-DiluteIt is one module in that ecosystem.
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-emilianobalderas-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/emilianobalderas/)
+[![Email](https://img.shields.io/badge/Email-ebalderas%40live.com.mx-D14836?style=flat-square&logo=gmail&logoColor=white)](mailto:ebalderas@live.com.mx)
 
 ---
 
-**Host Cell Lab Suite** – *Practical tools for high-performance biotechnology.*
+## Related
+
+[**CellSplit**](https://github.com/ebalderasr/CellSplit) — Neubauer cell counting and passage planning for CHO cultures.
+
+[**Kinetic Drive**](https://github.com/ebalderasr/Kinetic-Drive) — interactive kinetic analysis for mammalian cell culture data.
+
+[**Clonalyzer 2**](https://github.com/ebalderasr/Clonalyzer-2) — fed-batch kinetics analysis with clone comparisons and publication-ready plots.
+
+[**CellBlock**](https://github.com/ebalderasr/CellBlock) — shared biosafety cabinet scheduling for cell culture research groups.
+
+---
+
+<div align="center"><i>DiluteIt — pick your unknown, get your answer.</i></div>
